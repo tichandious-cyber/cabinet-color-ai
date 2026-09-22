@@ -18,7 +18,15 @@ jobs:
         run: |
           mkdir -p app extracted
           unzip -q cabinet-color-ai-github.zip -d extracted
-          cp -R extracted/cabinet-color-ai/. app/
+
+          PROJECT_DIR=$(find extracted -mindepth 1 -maxdepth 1 -type d | head -n 1)
+
+          if [ -z "$PROJECT_DIR" ]; then
+            echo "Project folder not found"
+            exit 1
+          fi
+
+          cp -R "$PROJECT_DIR"/. app/
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -33,3 +41,9 @@ jobs:
       - name: Build APK
         working-directory: app
         run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cabinet-color-ai-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
