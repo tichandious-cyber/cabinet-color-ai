@@ -16,8 +16,9 @@ jobs:
 
       - name: Extract project
         run: |
-          mkdir app
-          unzip -q cabinet-color-ai-github.zip -d app
+          mkdir -p app extracted
+          unzip -q cabinet-color-ai-github.zip -d extracted
+          cp -R extracted/cabinet-color-ai/. app/
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -32,9 +33,3 @@ jobs:
       - name: Build APK
         working-directory: app
         run: flutter build apk --release
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: cabinet-color-ai-apk
-          path: app/build/app/outputs/flutter-apk/app-release.apk
