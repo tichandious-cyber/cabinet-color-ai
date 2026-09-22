@@ -1,10 +1,10 @@
 name: Build Android APK
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -16,6 +16,7 @@ jobs:
 
       - name: Extract project
         run: |
+          rm -rf app extracted
           mkdir -p app extracted
           unzip -q cabinet-color-ai-github.zip -d extracted
 
@@ -26,21 +27,22 @@ jobs:
             exit 1
           fi
 
-          cp -R "$PROJECT_DIR"/. app/
+          cp -r "$PROJECT_DIR"/. app/
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.47.5'
           channel: stable
+          cache: true
 
       - name: Install dependencies
-        working-directory: app
         run: flutter pub get
+        working-directory: app
 
       - name: Build APK
-        working-directory: app
         run: flutter build apk --release
+        working-directory: app
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
